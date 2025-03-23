@@ -1,0 +1,65 @@
+name: Сборка и публикация приложения
+run-name: Коммит '${{ github.event.head_commit.message }}'
+
+env:
+  GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: linux
+            runner: ubuntu-latest
+            file: todone
+          - os: windows
+            runner: windows-latest
+            file: todone.exe
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Кэш зависимостей
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ matrix.runner }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Сборка бинарного файла
+        run: cargo build --release
+      - name: Сохранение файла в артифакты
+        uses: actions/upload-artifact@v4
+        with:
+          name: todone_${{ matrix.os }}
+          path: target/release/${{ matrix.file }}
+  
+  publish:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Загрузка бинарного файла linux из артефактов
+        uses: actions/download-artifact@v4
+        with:
+          name: todone_linux
+          path: artifacts
+      - name: Загрузка бинарного файла windows из артефактов
+        uses: actions/download-artifact@v4
+        with:
+          name: todone_windows
+          path: artifacts
+      - name: Получение версии приложения из Cargo.toml
+        id: app_version
+        uses: dante-signal31/rust-app-version@v1.2.0
+        with:
+          cargo_toml_folder: ./
+      - name: Публикация файлов
+        run: |
+          gh release create "v${{ steps.app_version.outputs.app_version }}" \
+            'artifacts/todone#todone_v${{ steps.app_version.outputs.app_version }}_linux_x64' \
+            'artifacts/todone.exe#todone_v${{ steps.app_version.outputs.app_version }}_windows_x64' 

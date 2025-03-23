@@ -4,7 +4,7 @@ use iced::{
     alignment::Horizontal, border::Radius, widget::{button, column, container, row, svg, text, Column, Space}, Border, Color, Length, Padding, Renderer, Theme
 };
 
-use crate::{core::{tasks::Task, ui::truncate_text}, icons::{check_icon, delete_icon}, ui::Message};
+use crate::{core::{tasks::Task, ui::truncate_text}, icons::{check_icon, delete_icon, edit_icon}, ui::{Message, Page}};
 
 pub fn func(task: &Task) -> Column<'static, Message, Theme, Renderer>{
     let priority_color;
@@ -50,20 +50,29 @@ pub fn func(task: &Task) -> Column<'static, Message, Theme, Renderer>{
                     if !task.completed {Color::WHITE}
                     else {Color::from_rgb(0.65, 0.65, 0.65)}
                 ),
-                text(truncate_text(&task.description, 74)).size(12)
+                text(truncate_text(&task.description, 60)).size(12)
                 .color(
                     if !task.completed {Color::from_rgb(0.7, 0.7, 0.7)}
                     else {Color::from_rgb(0.35, 0.35, 0.35)}
                 )
             ],
             container(
-                button(
-                    svg(svg::Handle::from_memory(delete_icon()))
-                    .width(Length::Fill).height(Length::Fill)
-                ).style(move |_, _| button::Style { 
-                    ..Default::default()
-                }).padding(Padding::from(4))
-                .width(30).height(30).on_press(Message::DeleteTask(task.id.clone()))
+                row![
+                    button(
+                        svg(svg::Handle::from_memory(edit_icon()))
+                        .width(Length::Fill).height(Length::Fill)
+                    ).style(move |_, _| button::Style { 
+                        ..Default::default()
+                    }).padding(Padding::from(4))
+                    .width(30).height(30).on_press(Message::ChangePage(Page::EditTask(task.id.clone()))),
+                    button(
+                        svg(svg::Handle::from_memory(delete_icon()))
+                        .width(Length::Fill).height(Length::Fill)
+                    ).style(move |_, _| button::Style { 
+                        ..Default::default()
+                    }).padding(Padding::from(4))
+                    .width(30).height(30).on_press(Message::DeleteTask(task.id.clone()))
+                ]
             ).width(Length::Fill).align_x(Horizontal::Right)
         ].spacing(10).padding(Padding::new(10.0))
     ).width(Length::Fill).padding(Padding::from([6, 0])),

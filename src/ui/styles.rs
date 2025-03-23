@@ -21,7 +21,7 @@ impl ToDo{
 
     pub fn primary_color() -> Color{ Color::parse("#0f9aff").unwrap() }
 
-    pub fn priority_button(todo: &ToDo, status: button::Status, priority: u8) -> button::Style{
+    pub fn priority_button(current_priority: u8, status: button::Status, priority: u8) -> button::Style{
         let priority_color = match priority{
             0 => Color::parse("#6B7280").unwrap(),
             1 => Color::parse("#FDBA74").unwrap(),
@@ -40,13 +40,13 @@ impl ToDo{
             },
             ..Default::default()
         };
-        if todo.create.priority == priority{
+        if current_priority == priority{
             style.background = Some(Background::Color(priority_color));
         }
         match status {
             button::Status::Active => {},
             button::Status::Hovered => {
-                if todo.create.priority != priority{
+                if current_priority != priority{
                     style.background = Some(Background::Color(Color::from_rgb(0.1, 0.1, 0.1)));
                 }
             },

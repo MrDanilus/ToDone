@@ -1,6 +1,6 @@
 [package]
 name = "todone"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
@@ -10,6 +10,7 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 
 uuid = { version = "1.16.0", features = ["fast-rng", "v7"] }
+levenshtein = "1.0.5"
 
 [profile.release]
 strip = true

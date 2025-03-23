@@ -10,6 +10,7 @@ pub fn func(todo: &ToDo) -> Element<Message> {
     }
     return match todo.page{
         Page::TasksList => pages::tasks::list::func(todo),
-        Page::CreateTask => pages::tasks::new_task::func(todo)
+        Page::CreateTask => pages::tasks::new_task::func(todo),
+        Page::EditTask(_) => pages::tasks::edit_task::func(todo)
     }
 }

@@ -3,7 +3,7 @@ use serde_json::{json, Map, Value};
 use crate::core::files::{get::get_file, save::save_file};
 use super::Task;
 
-pub fn _save_task(task: Task) -> Result<(), String>{
+pub fn save_task(task: Task) -> Result<(), String>{
     let tasks_str = match get_file("tasks.todo"){
         Ok(res) => res,
         Err(err) => return Err(err)

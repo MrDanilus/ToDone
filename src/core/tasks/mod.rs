@@ -4,7 +4,7 @@ pub mod create;
 pub mod get;
 pub mod save;
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Task{
     pub id: String,
     pub name: String,

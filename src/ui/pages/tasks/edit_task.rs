@@ -12,8 +12,8 @@ pub fn func(todo: &ToDo) -> Element<Message> {
         buttons.push(
             container(
                 button("")
-                .on_press(Message::PriorityCreateChange(i))
-                .style(move |_, status| ToDo::priority_button(todo.create.priority, status, i))
+                .on_press(Message::PriorityEditChange(i))
+                .style(move |_, status| ToDo::priority_button(todo.edit.priority, status, i))
                 .width(30).height(30)
             ).center_x(Length::Fill).into(),
         );
@@ -21,17 +21,17 @@ pub fn func(todo: &ToDo) -> Element<Message> {
 
     container(
         column![
-            close_n_text(Message::ChangePage(Page::TasksList), String::from("Новая задача")),
+            close_n_text(Message::ChangePage(Page::TasksList), String::from("Изменить задачу")),
             container(
                 column![
                     container(
                         column![
-                        text_input("Имя", &todo.create.name)
-                            .on_input(Message::NameCreateType)
+                        text_input("Имя", &todo.edit.name)
+                            .on_input(Message::NameEditType)
                             .width(300)
                             .padding(Padding::new(10.0)),
-                        text_editor(&todo.create.description)
-                            .on_action(Message::DescriptionCreateType)
+                        text_editor(&todo.edit.description)
+                            .on_action(Message::DescriptionEditType)
                             .placeholder("Описание")
                             .width(300)
                             .padding(Padding::new(10.0))
@@ -49,16 +49,16 @@ pub fn func(todo: &ToDo) -> Element<Message> {
                         ).center_x(Length::Fill)
                     ]).padding(Padding::new(20.0)),
                     container(
-                        button("Создать").padding(Padding::new(10.0))
-                        .on_press(Message::CreateTask)
+                        button("Изменить").padding(Padding::new(10.0))
+                        .on_press(Message::EditTask)
                     ).center_x(Length::Fill),
                     Space::new(10, 10),
                     container(
-                        text(&todo.create.error)
+                        text(&todo.edit.error)
                         .color(Color::from_rgb(1.0, 0.0, 0.0))
                     ).center_x(Length::Fill),
                     container(
-                        text(&todo.create.success)
+                        text(&todo.edit.success)
                         .color(Color::from_rgb(0.0, 1.0, 0.0))
                     ).center_x(Length::Fill)
                 ]

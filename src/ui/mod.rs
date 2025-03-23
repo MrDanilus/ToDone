@@ -12,7 +12,8 @@ use crate::core::tasks::Task;
 pub enum Page {
     #[default]
     TasksList,
-    CreateTask
+    CreateTask,
+    EditTask(String)
 }
 
 #[derive(Debug, Clone)]
@@ -27,10 +28,15 @@ pub enum Message {
     CompleteTask(String),
     DeleteTask(String),
     // Новая задача
-    NameType(String),
-    DescriptionType(text_editor::Action),
-    ChangePriority(u8),
-    CreateTask
+    NameCreateType(String),
+    DescriptionCreateType(text_editor::Action),
+    PriorityCreateChange(u8),
+    CreateTask,
+    // Редактирование задачи
+    NameEditType(String),
+    DescriptionEditType(text_editor::Action),
+    PriorityEditChange(u8),
+    EditTask
 }
 
 #[derive(Default)]
@@ -44,11 +50,23 @@ pub struct ToDo {
     pub tasks: Vec<Task>,
 
     // Новая задача
-    pub create: CreateTask
+    pub create: CreateTask,
+    // Редактирование задачи
+    pub edit: EditTask
 }
 
 #[derive(Default)]
 pub struct CreateTask{
+    pub name: String,
+    pub description: text_editor::Content,
+    pub priority: u8,
+    pub error: String,
+    pub success: String
+}
+
+#[derive(Default)]
+pub struct EditTask{
+    pub id: String,
     pub name: String,
     pub description: text_editor::Content,
     pub priority: u8,
