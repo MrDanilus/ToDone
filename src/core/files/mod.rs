@@ -7,7 +7,7 @@ pub fn resolve_path(file: &str) -> Result<PathBuf, String>{
     #[cfg(target_family="unix")]
     let path = Path::new("~/.airfish/todo/");
     #[cfg(target_family="unix")]
-    return path.join(&file);
+    return Ok(path.join(&file));
 
     #[cfg(target_family="windows")]
     let local_app_data = match var("LocalAppData"){
