@@ -6,6 +6,7 @@ use super::{ pages, Message, Page};
 pub fn func(todo: &ToDo) -> Element<Message> {
     if let Err(err) = check_files(){ Message::Panic(err); };
     if !todo.panic.is_empty(){
+        println!("{}", todo.panic);
         return pages::panic::func(todo);
     }
     return match todo.page{

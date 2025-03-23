@@ -121,9 +121,11 @@ pub fn func(todo: &mut ToDo, message: Message) {
                 todo.create.error = String::from("Длина описания не может быть больше 2048 символов");
             }
             else{
-                create::task(todo);
-                todo.create.success = String::from("Успешно!");
+                if let Some(msg) = create::task(todo){
+                    func(todo, msg);
+                }
                 func(todo, Message::LoadTasks);
+                func(todo, Message::ChangePage(Page::TasksList));
             }
         },
         // Редактирование задачи
@@ -158,10 +160,7 @@ pub fn func(todo: &mut ToDo, message: Message) {
                             todo.edit.error = err;
                         } else{
                             func(todo, Message::LoadTasks);
-                            // Сортировка задач
-                            todo.tasks.sort_by(|task1, task2| task2.priority.cmp(&task1.priority));
-                            todo.tasks.sort_by_key(|task| task.completed.clone());
-                            todo.edit.success = String::from("Успешно!");
+                            func(todo, Message::ChangePage(Page::TasksList));
                         }
                     },
                     None => {
