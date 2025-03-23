@@ -52,8 +52,10 @@ pub fn func(todo: &mut ToDo, message: Message) {
                     }
                     todo.edit.error.clear();
                     todo.edit.success.clear();
-                }
+                },
+                Page::Settings => {}
             }
+            todo.search_text.clear();
             todo.page = page
         },
 
@@ -115,7 +117,7 @@ pub fn func(todo: &mut ToDo, message: Message) {
             todo.create.success.clear();
             let name = todo.create.name.clone();
             let description = todo.create.description.text().clone();
-            if name.len() < 2 || name.len() > 128{
+            if name.trim().len() < 2 || name.trim().len() > 128{
                 todo.create.error = String::from("Длина названия должна быть от 2 до 128 символов");
             } else if description.trim().len() > 2048{
                 todo.create.error = String::from("Длина описания не может быть больше 2048 символов");
@@ -142,7 +144,7 @@ pub fn func(todo: &mut ToDo, message: Message) {
             todo.edit.success.clear();
             let name = todo.edit.name.clone();
             let description = todo.edit.description.text().clone();
-            if name.len() < 2 || name.len() > 128{
+            if name.trim().len() < 2 || name.trim().len() > 128{
                 todo.edit.error = String::from("Длина названия должна быть от 2 до 128 символов");
             } else if description.trim().len() > 2048{
                 todo.edit.error = String::from("Длина описания не может быть больше 2048 символов");
@@ -152,8 +154,8 @@ pub fn func(todo: &mut ToDo, message: Message) {
                 match index {
                     Some(index) => {
                         let mut task = todo.tasks.iter().nth(index).unwrap().clone();
-                        task.name = todo.edit.name.clone();
-                        task.description = todo.edit.description.text();
+                        task.name = todo.edit.name.clone().trim().to_string();
+                        task.description = todo.edit.description.text().trim().to_string();
                         task.priority = todo.edit.priority;
                         // Сохранение задачи
                         if let Err(err) = save_task(task){

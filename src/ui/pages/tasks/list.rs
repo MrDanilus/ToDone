@@ -4,7 +4,7 @@ use iced::{
     }, Color, Element, Length, Padding
 };
 
-use crate::ui::{components::tasks_list::task, Message, Page, ToDo};
+use crate::{icons::settings_icon, ui::{components::{headers::button_n_text, tasks_list::task}, Message, Page, ToDo}};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     let tasks_container;
@@ -27,11 +27,7 @@ pub fn func(todo: &ToDo) -> Element<Message> {
 
     container(
         column![
-            container(
-                text("Задачки")
-                    .size(32)
-            ).padding(Padding::top(Padding::new(0.0), 30.0))
-                .center_x(Length::Fill),
+            button_n_text(settings_icon(), Message::ChangePage(Page::Settings), String::from("Задачки")),
             container(
                 row![
                     text_input("Поиск", &todo.search_text)

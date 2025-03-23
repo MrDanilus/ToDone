@@ -4,7 +4,7 @@ use iced::{
     }, Color, Element, Length, Padding
 };
 
-use crate::ui::{components::headers::close_n_text, Message, Page, ToDo};
+use crate::{icons::arrow_back_icon, ui::{components::headers::button_n_text, Message, Page, ToDo}};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     let mut buttons = Vec::new();
@@ -21,7 +21,7 @@ pub fn func(todo: &ToDo) -> Element<Message> {
 
     container(
         column![
-            close_n_text(Message::ChangePage(Page::TasksList), String::from("Изменить задачу")),
+            button_n_text(arrow_back_icon(), Message::ChangePage(Page::TasksList), String::from("Изменить задачу")),
             container(
                 column![
                     container(

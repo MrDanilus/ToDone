@@ -11,7 +11,7 @@ mod core;
 #[path="assets/icons/mod.rs"] mod icons;
 
 pub fn main() -> iced::Result {
-    iced::application("ToDo", core::update::func, ui::view::func)
+    iced::application("ToDone", core::update::func, ui::view::func)
         .centered()
         .theme(ToDo::theme)
         .window(Settings{

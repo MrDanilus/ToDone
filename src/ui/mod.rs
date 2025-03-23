@@ -10,10 +10,13 @@ use crate::core::tasks::Task;
 
 #[derive(Debug, Clone, Default)]
 pub enum Page {
+    // Задачи
     #[default]
     TasksList,
     CreateTask,
-    EditTask(String)
+    EditTask(String),
+    // Система
+    Settings
 }
 
 #[derive(Debug, Clone)]

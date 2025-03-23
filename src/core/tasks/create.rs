@@ -8,7 +8,7 @@ pub fn task(todo: &ToDo) -> Option<Message>{
     let uuid = Uuid::now_v7();
     let task = Task{
         id: uuid.clone().to_string(),
-        name: todo.create.name.clone(),
+        name: todo.create.name.clone().trim().to_string(),
         description: todo.create.description.text().trim().to_string(),
         priority: todo.create.priority,
         completed: false,

@@ -22,7 +22,7 @@ pub fn save_task(task: Task) -> Result<(), String>{
     
     match tasks_map_json.contains_key(&task.id){
         true => tasks_map_json[&task.id] = json!(task),
-        false => return Err(format!("При сохранении задача с ID: {} на найдена", task.id)),
+        false => return Err(format!("При сохранении\n задача с ID: {}\n не найдена", task.id)),
     };
     if let Err(err) = save_file("tasks.todo", json!(tasks_map_json).to_string().as_bytes()){
         return Err(err)
