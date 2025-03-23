@@ -1,10 +1,12 @@
+use std::collections::HashMap;
+
 use serde_json::Value;
 
 use crate::core::files::get::get_file;
 use super::Task;
 
-pub fn get_all() -> Result<Vec<Task>, String>{
-    let mut result = Vec::new();
+pub fn get_all() -> Result<HashMap<String, Task>, String>{
+    let mut result = HashMap::new();
 
     let tasks_str = match get_file("tasks.todo"){
         Ok(res) => res,
@@ -23,9 +25,9 @@ pub fn get_all() -> Result<Vec<Task>, String>{
     };
     for task in tasks{
         match serde_json::from_value::<Task>(task.1.clone()){
-            Ok(res) => result.push(res),
+            Ok(res) => result.insert(task.0.clone(), res),
             Err(err) => return Err(err.to_string())
-        }
+        };
     }
     return Ok(result);
 }

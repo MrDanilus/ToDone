@@ -17,7 +17,7 @@ pub fn func(todo: &ToDo) -> Element<Message> {
     } else{
         let mut elements = Vec::new();
         for task in &todo.tasks{
-            elements.push(task::func(task).into());
+            elements.push(task::func(task.1).into());
         }
 
         tasks_container = container(scrollable(

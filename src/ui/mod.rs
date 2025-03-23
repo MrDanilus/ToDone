@@ -3,6 +3,8 @@ pub mod pages;
 pub mod components;
 pub mod styles;
 
+use std::collections::HashMap;
+
 use iced::widget::text_editor;
 
 use crate::core::tasks::Task;
@@ -50,7 +52,7 @@ pub struct ToDo {
 
     // Список задач
     pub search_text: String,
-    pub tasks: Vec<Task>,
+    pub tasks: HashMap<String, Task>,
 
     // Новая задача
     pub create: CreateTask,

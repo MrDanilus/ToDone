@@ -3,7 +3,7 @@ use iced::widget::text_editor::{Action, Edit};
 use levenshtein::levenshtein;
 
 use crate::{core::tasks::create, ui::{Message, Page, ToDo}};
-use super::tasks::{get::get_all, save::{rewrite_all, save_task}};
+use super::tasks::{get::get_all, save::save_all};
 
 pub fn func(todo: &mut ToDo, message: Message) {
     match message {
@@ -13,9 +13,6 @@ pub fn func(todo: &mut ToDo, message: Message) {
                 Ok(res) => todo.tasks = res,
                 Err(err) => { Message::Panic(err); }
             };
-            // Сортировка задач
-            todo.tasks.sort_by(|task1, task2| task2.priority.cmp(&task1.priority));
-            todo.tasks.sort_by_key(|task| task.completed.clone());
         },
 
         // Страницы
@@ -37,14 +34,13 @@ pub fn func(todo: &mut ToDo, message: Message) {
                     todo.create.success.clear();
                 },
                 Page::EditTask(id) => {
-                    todo.edit.id = id;
-                    let index = todo.tasks.iter().position(|x| x.id == todo.edit.id);
-                    match index {
-                        Some(index) => {
-                            let task = todo.tasks.iter().nth(index).unwrap().clone();
-                            todo.edit.name = task.name;
+                    todo.edit.id = id.clone();
+                    let task = todo.tasks.get(&id);
+                    match task {
+                        Some(task) => {
+                            todo.edit.name = task.name.clone();
                             todo.edit.description.perform(Action::Edit(
-                                Edit::Paste(Arc::new(task.description)))
+                                Edit::Paste(Arc::new(task.description.clone())))
                             );
                             todo.edit.priority = task.priority;
                         },
@@ -65,37 +61,30 @@ pub fn func(todo: &mut ToDo, message: Message) {
             func(todo, Message::LoadTasks);
             if todo.search_text.trim().len() > 1{
                 let tasks = todo.tasks.clone();
-                for i in 0..tasks.len(){
-                    let task = tasks.get(i).unwrap();
-                    if levenshtein(&task.name, &todo.search_text.trim()) > 4{
-                        let index = todo.tasks.iter().position(|x| x.id == task.id).unwrap();
-                        todo.tasks.remove(index);
+                for task in tasks{
+                    if levenshtein(&task.1.name, &todo.search_text.trim()) > 4{
+                        todo.tasks.remove(&task.0);
                     }
                 }
             }
         },
         Message::CompleteTask(id) => {
-            let index = todo.tasks.iter().position(|x| x.id == id);
-            match index {
-                Some(index) => {
-                    let task = todo.tasks.iter().nth(index).unwrap().clone();
-                    todo.tasks.iter_mut().nth(index).unwrap().completed = !task.completed;
-                    if let Err(err) = rewrite_all(todo.tasks.clone()){
+            let task = todo.tasks.get_mut(&id);
+            match task {
+                Some(task) => {
+                    task.completed = !task.completed;
+                    if let Err(err) = save_all(todo.tasks.clone()){
                         todo.panic = err
                     }
-                    // Сортировка задач
-                    todo.tasks.sort_by(|task1, task2| task2.priority.cmp(&task1.priority));
-                    todo.tasks.sort_by_key(|task| task.completed.clone());
                 },
                 None => {}
             }
         },
         Message::DeleteTask(id) => {
-            let index = todo.tasks.iter().position(|x| x.id == id);
-            match index {
-                Some(index) => {
-                    todo.tasks.remove(index);
-                    if let Err(err) = rewrite_all(todo.tasks.clone()){
+            match todo.tasks.get(&id) {
+                Some(_) => {
+                    todo.tasks.remove(&id);
+                    if let Err(err) = save_all(todo.tasks.clone()){
                         todo.panic = err
                     }
                 },
@@ -150,18 +139,16 @@ pub fn func(todo: &mut ToDo, message: Message) {
                 todo.edit.error = String::from("Длина описания не может быть больше 2048 символов");
             }
             else{
-                let index = todo.tasks.iter().position(|x| x.id == todo.edit.id);
-                match index {
-                    Some(index) => {
-                        let mut task = todo.tasks.iter().nth(index).unwrap().clone();
+                let task = todo.tasks.get_mut(&todo.edit.id);
+                match task {
+                    Some(task) => {
                         task.name = todo.edit.name.clone().trim().to_string();
                         task.description = todo.edit.description.text().trim().to_string();
                         task.priority = todo.edit.priority;
                         // Сохранение задачи
-                        if let Err(err) = save_task(task){
+                        if let Err(err) = save_all(todo.tasks.clone()){
                             todo.edit.error = err;
                         } else{
-                            func(todo, Message::LoadTasks);
                             func(todo, Message::ChangePage(Page::TasksList));
                         }
                     },
