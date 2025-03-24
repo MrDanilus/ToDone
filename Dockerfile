@@ -16,7 +16,7 @@ RUN cargo build --target x86_64-pc-windows-gnu --release
 
 FROM scratch
 
-COPY --from=builder /usr/src/app/target/x86_64-unknown-linux-gnu/release/todo /
-COPY --from=builder /usr/src/app/target/x86_64-pc-windows-gnu/release/todo.exe /
+COPY --from=builder /usr/src/app/target/x86_64-unknown-linux-gnu/release/todone /
+COPY --from=builder /usr/src/app/target/x86_64-pc-windows-gnu/release/todone.exe /
 
-ENTRYPOINT  ["/todo", "/todo.exe"]
+ENTRYPOINT  ["/todone", "/todone.exe"]

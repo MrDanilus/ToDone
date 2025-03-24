@@ -1,10 +1,10 @@
 use iced::{
     widget::{
-        button, column, container, row, scrollable, text, text_input, Column
+        button, column, container, row, scrollable, svg, text, text_input, Column
     }, Color, Element, Length, Padding
 };
 
-use crate::{icons::settings_icon, ui::{components::{headers::button_n_text, tasks_list::task}, Message, Page, ToDo}};
+use crate::{icons::settings_icon, ui::{components::{headers::button_n_text, tasks_list::task}, styles::ToDoTheme, Message, Page, ToDo}};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     let tasks_container;
@@ -17,7 +17,10 @@ pub fn func(todo: &ToDo) -> Element<Message> {
     } else{
         let mut elements = Vec::new();
         for task in &todo.tasks{
-            elements.push(task::func(task.1).into());
+            elements.push(task::func(
+                (todo.settings.delete_confirm, todo.task_to_delete.clone()), 
+                task.1
+            ).into());
         }
 
         tasks_container = container(scrollable(
@@ -27,7 +30,21 @@ pub fn func(todo: &ToDo) -> Element<Message> {
 
     container(
         column![
-            button_n_text(settings_icon(), Message::ChangePage(Page::Settings), String::from("Задачки")),
+            button_n_text(
+                svg(svg::Handle::from_memory(settings_icon()))
+                    .width(36).height(44)
+                    .style(|theme, status| svg::Style { 
+                        color: Some(
+                            match status {
+                                svg::Status::Idle => Color::from_rgb(0.4, 0.4, 0.4),
+                                svg::Status::Hovered => match ToDo::get_theme(theme){
+                                    ToDoTheme::Dark => Color::WHITE,
+                                    ToDoTheme::Light => Color::BLACK
+                                }
+                            }
+                        )
+                    }), 
+                Message::ChangePage(Page::Settings), String::from("Задачки")),
             container(
                 row![
                     text_input("Поиск", &todo.search_text)
@@ -36,9 +53,12 @@ pub fn func(todo: &ToDo) -> Element<Message> {
                         .padding(Padding::new(4.0)),
                     container(button(text("+").size(32).line_height(0.4))
                         .on_press(Message::ChangePage(Page::CreateTask))
-                        .style(|_, _| button::Style{
+                        .style(|theme, _| button::Style{
                             background: None,
-                            text_color: Color::WHITE,
+                            text_color: match ToDo::get_theme(theme) {
+                                ToDoTheme::Dark => Color::WHITE,
+                                ToDoTheme::Light => Color::BLACK
+                            },
                             ..Default::default()
                     }))
                 ]

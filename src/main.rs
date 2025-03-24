@@ -19,10 +19,14 @@ pub fn main() -> iced::Result {
             resizable: false,
             ..Default::default()
         })
+        // Запуск функции для загрузки данных
         .subscription(subscription)
         .run()
 }
 
+// Функция, выполняемая при запуске программы
 fn subscription(_: &ToDo) -> Subscription<Message> {
-    Subscription::run_with_id((), stream::once(async { Message::LoadTasks }))
+    Subscription::run_with_id((), stream::iter(vec![ 
+        Message::LoadTasks, Message::LoadSettings
+    ]))
 }

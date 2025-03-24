@@ -2,26 +2,85 @@ use std::f32::INFINITY;
 use std::sync::Arc;
 use iced::border::Radius;
 use iced::theme::{Custom, Palette};
+use iced::widget::svg;
 use iced::{widget::button, Background, Border, Color, Theme};
+use serde::{Deserialize, Serialize};
 
 use super::ToDo;
+
+#[derive(Debug, Serialize, Deserialize, Default, Clone, PartialEq, Eq)]
+pub enum ToDoTheme{
+    #[default]
+    Dark,
+    Light
+}
+impl std::fmt::Display for ToDoTheme {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            Self::Dark => "Dark",
+            Self::Light => "Light"
+        })
+    }
+}
 
 impl ToDo{
     pub fn theme(&self) -> Theme{
         Theme::Custom(
-            Arc::new(Custom::new(String::from("Dark"), Palette{
-                background: Color::parse("#111318").unwrap(),
-                text: Color::parse("#f0f0f0").unwrap(),
-                primary: Self::primary_color(),
-                success: Self::primary_color(),
-                danger: Self::primary_color()
-            }))
+            if let Some(theme) = &self.settings.theme{
+                match theme{
+                    ToDoTheme::Dark => Arc::new(Custom::new(String::from("Dark"), Palette{
+                        background: Color::parse("#111318").unwrap(),
+                        text: Color::parse("#f0f0f0").unwrap(),
+                        primary: Self::primary_color(),
+                        success: Self::primary_color(),
+                        danger: Self::primary_color()
+                    })),
+                    ToDoTheme::Light => Arc::new(Custom::new(String::from("Light"), Palette{
+                        background: Color::parse("#f0f0f0").unwrap(),
+                        text: Color::parse("#111318").unwrap(),
+                        primary: Self::primary_color(),
+                        success: Self::primary_color(),
+                        danger: Self::primary_color()
+                    }))
+                }
+            } else{
+                Arc::new(Custom::new(String::from("Dark"), Palette{
+                    background: Color::parse("#111318").unwrap(),
+                    text: Color::parse("#f0f0f0").unwrap(),
+                    primary: Self::primary_color(),
+                    success: Self::primary_color(),
+                    danger: Self::primary_color()
+                }))
+            }
         )
+    }
+    pub fn get_theme(theme: &Theme) -> ToDoTheme {
+        match theme {
+            Theme::Custom(theme) => {
+                match theme.to_string().as_str() {
+                    "Dark" => ToDoTheme::Dark,
+                    "Light" => ToDoTheme::Light,
+                    _ => ToDoTheme::Dark
+                }
+            },
+            _ => ToDoTheme::Dark
+        }
     }
 
     pub fn primary_color() -> Color{ Color::parse("#0f9aff").unwrap() }
 
-    pub fn priority_button(current_priority: u8, status: button::Status, priority: u8) -> button::Style{
+    pub fn svg_icon(current_theme: ToDoTheme, dark_color: Color) -> svg::Style{
+        svg::Style { 
+            color: match current_theme {
+                ToDoTheme::Dark => Some(dark_color),
+                ToDoTheme::Light => Some(dark_color.inverse())
+            }
+        }
+    }
+
+    pub fn priority_button(
+        current_theme: ToDoTheme, current_priority: u8, status: button::Status, priority: u8
+    ) -> button::Style{
         let priority_color = match priority{
             0 => Color::parse("#6B7280").unwrap(),
             1 => Color::parse("#FDBA74").unwrap(),
@@ -47,7 +106,12 @@ impl ToDo{
             button::Status::Active => {},
             button::Status::Hovered => {
                 if current_priority != priority{
-                    style.background = Some(Background::Color(Color::from_rgb(0.1, 0.1, 0.1)));
+                    style.background = Some(Background::Color(
+                        match current_theme {
+                            ToDoTheme::Dark => Color::from_rgb(0.1, 0.1, 0.1),
+                            ToDoTheme::Light => Color::from_rgb(0.9, 0.9, 0.9)
+                        }
+                    ))
                 }
             },
             button::Status::Pressed => {},

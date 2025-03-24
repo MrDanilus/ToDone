@@ -3,11 +3,18 @@ pub mod save;
 
 use std::{env::var, fs, path::{Path, PathBuf}};
 
+use serde_json::json;
+
 pub fn resolve_path(file: &str) -> Result<PathBuf, String>{
     #[cfg(target_family="unix")]
-    let path = Path::new("~/.airfish/todo/");
+    let local_app_data = match var("HOME"){
+        Ok(res) => res,
+        Err(err) => return Err(err.to_string())
+    };
     #[cfg(target_family="unix")]
-    return Ok(path.join(&file));
+    let path = Path::new(&local_app_data);
+    #[cfg(target_family="unix")]
+    return Ok(path.join(format!("~/.airfish/todo/{file}")));
 
     #[cfg(target_family="windows")]
     let local_app_data = match var("LocalAppData"){
@@ -50,6 +57,18 @@ pub fn check_files() -> Result<(), String>{
     let history_path = resolve_path("history.todo").unwrap();
     if !history_path.exists(){
         if let Err(err) = fs::write(history_path, b"{}"){
+            return Err(err.to_string())
+        }
+    };
+    // Settings file
+    let settings_path = resolve_path("settings.todo").unwrap();
+    if !settings_path.exists(){
+        if let Err(err) = fs::write(settings_path, 
+            json!({
+                "delete_confirm": true,
+                "theme": "Dark"
+            }).to_string().as_bytes()
+        ){
             return Err(err.to_string())
         }
     };
