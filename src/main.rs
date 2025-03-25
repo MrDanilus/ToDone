@@ -5,13 +5,17 @@ use iced::window::Settings;
 use iced::{Size, Subscription};
 
 mod ui;
-use ui::{Message, ToDo};
+use ui::ToDo;
 mod core;
+use core::update::{
+    settings::SettingsMsg,
+    Message
+};
 
 #[path="assets/icons/mod.rs"] mod icons;
 
 pub fn main() -> iced::Result {
-    iced::application("ToDone", core::update::func, ui::view::func)
+    iced::application("ToDone", core::update::handle, ui::view::func)
         .centered()
         .theme(ToDo::theme)
         .window(Settings{
@@ -27,6 +31,6 @@ pub fn main() -> iced::Result {
 // Функция, выполняемая при запуске программы
 fn subscription(_: &ToDo) -> Subscription<Message> {
     Subscription::run_with_id((), stream::iter(vec![ 
-        Message::LoadTasks, Message::LoadSettings
+        Message::LoadTasks, Message::Settings(SettingsMsg::LoadSettings)
     ]))
 }

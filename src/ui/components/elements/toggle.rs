@@ -5,7 +5,7 @@ use iced::{
     Background, Border, Color, Element, Padding, Renderer, Theme
 };
 
-use crate::ui::{styles::ToDoTheme, Message, ToDo};
+use crate::{core::update::Message, ui::{styles::ToDoTheme, ToDo}};
 
 pub fn func(status: bool, msg: Message) -> Element<'static, Message, Theme, Renderer>{
     container(

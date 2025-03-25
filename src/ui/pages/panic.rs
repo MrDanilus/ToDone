@@ -4,7 +4,7 @@ use iced::{
     }, Color, Element, Length, Padding
 };
 
-use crate::ui::{Message, ToDo};
+use crate::{core::update::Message, ui::ToDo};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     container(

@@ -4,7 +4,13 @@ use iced::{
     }, Color, Element, Length, Padding
 };
 
-use crate::{icons::settings_icon, ui::{components::{headers::button_n_text, tasks_list::task}, styles::ToDoTheme, Message, Page, ToDo}};
+use crate::{
+    core::update::{tasks_list::TasksListMsg, Message}, icons::menu_icon, 
+    ui::{
+        components::{headers::button_n_text, tasks_list::task}, 
+        styles::ToDoTheme, Page, ToDo
+    }
+};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     let tasks_container;
@@ -31,7 +37,7 @@ pub fn func(todo: &ToDo) -> Element<Message> {
     container(
         column![
             button_n_text(
-                svg(svg::Handle::from_memory(settings_icon()))
+                svg(svg::Handle::from_memory(menu_icon()))
                     .width(36).height(44)
                     .style(|theme, status| svg::Style { 
                         color: Some(
@@ -48,8 +54,9 @@ pub fn func(todo: &ToDo) -> Element<Message> {
             container(
                 row![
                     text_input("Поиск", &todo.search_text)
-                        .on_input(Message::SearchChange)
-                        .size(16).width(240.0)
+                        .on_input(
+                            |str| Message::TasksList(TasksListMsg::SearchChange(str))
+                        ).size(16).width(240.0)
                         .padding(Padding::new(4.0)),
                     container(button(text("+").size(32).line_height(0.4))
                         .on_press(Message::ChangePage(Page::CreateTask))

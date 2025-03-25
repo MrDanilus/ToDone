@@ -5,9 +5,8 @@ pub mod styles;
 
 use std::collections::HashMap;
 use iced::widget::text_editor;
-use styles::ToDoTheme;
 
-use crate::core::{settings::Settings, tasks::Task};
+use crate::core::functions::{settings::Settings, tasks::Task};
 
 
 #[derive(Debug, Clone, Default)]
@@ -19,36 +18,6 @@ pub enum Page {
     EditTask(String),
     // Система
     Settings
-}
-
-#[derive(Debug, Clone)]
-pub enum Message {
-    // Система
-    LoadTasks,
-
-    // Страницы
-    Panic(String),
-    ChangePage(Page),
-    // Список задач
-    SearchChange(String),
-    CompleteTask(String),
-    DeleteConfirm(String),
-    DeleteTask(String),
-
-    // Новая задача
-    NameCreateType(String),
-    DescriptionCreateType(text_editor::Action),
-    PriorityCreateChange(u8),
-    CreateTask,
-    // Редактирование задачи
-    NameEditType(String),
-    DescriptionEditType(text_editor::Action),
-    PriorityEditChange(u8),
-    EditTask,
-    // Настройки
-    LoadSettings,
-    ChangeDeleteConfirm,
-    ChangeTheme(ToDoTheme)
 }
 
 #[derive(Default)]

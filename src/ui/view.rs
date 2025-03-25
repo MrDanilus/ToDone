@@ -1,7 +1,7 @@
 use iced::Element;
 
-use crate::{core::files::check_files, ui::ToDo};
-use super::{ pages, Message, Page};
+use crate::{core::{functions::files::check_files, update::Message}, ui::ToDo};
+use super::{ pages, Page};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     if let Err(err) = check_files(){ Message::Panic(err); };

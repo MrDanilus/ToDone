@@ -1,6 +1,6 @@
 use iced::{widget::{button, container, text, Stack, Svg}, Color, Length, Padding, Theme};
 
-use crate::ui::Message;
+use crate::core::update::Message;
 
 pub fn button_n_text(svg: Svg<'static>, function: Message, title: String) -> Stack<'static, Message, Theme>{
     let mut stack = Stack::new();

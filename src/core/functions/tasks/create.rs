@@ -1,7 +1,13 @@
 use serde_json::{json, Value};
 use uuid::Uuid;
 
-use crate::{core::files, ui::{Message, ToDo}};
+use crate::{
+    core::{
+        functions::files,
+        update::Message
+    },
+    ui::ToDo
+};
 use super::Task;
 
 pub fn task(todo: &ToDo) -> Option<Message>{

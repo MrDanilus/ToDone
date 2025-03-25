@@ -1,10 +1,16 @@
 use std::f32::INFINITY;
 
 use iced::{
-    alignment::Horizontal, border::Radius, widget::{button, column, container, row, svg, text, Column, Space}, Border, Color, Length, Padding, Renderer, Theme
+    alignment::Horizontal, border::Radius, 
+    widget::{button, column, container, row, svg, text, Column, Space}, 
+    Border, Color, Length, Padding, Renderer, Theme
 };
 
-use crate::{core::{tasks::Task, ui::truncate_text}, icons::{check_icon, cross_icon, delete_icon, edit_icon}, ui::{styles::ToDoTheme, Message, Page, ToDo}};
+use crate::{
+    core::{functions::tasks::Task, ui::truncate_text, update::{tasks_list::TasksListMsg, Message}}, 
+    icons::{check_icon, cross_icon, delete_icon, edit_icon}, 
+    ui::{styles::ToDoTheme, Page, ToDo}
+};
 
 pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Message, Theme, Renderer>{
     let completed = task.completed.clone();
@@ -43,7 +49,9 @@ pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Mess
                     ..Default::default()
                 }).padding(Padding::from(4))
                 .width(30).height(30)
-                .on_press(Message::CompleteTask(task.id.clone()))
+                .on_press(
+                    Message::TasksList(TasksListMsg::CompleteTask(task.id.clone()))
+                )
             ),
             column![
                 text(truncate_text(&task.name, 40)).size(20)
@@ -72,14 +80,18 @@ pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Mess
                         ).style(move |_, _| button::Style { 
                             ..Default::default()
                         }).padding(Padding::from(4))
-                        .width(30).height(30).on_press(Message::DeleteConfirm(String::new())),
+                        .width(30).height(30).on_press(
+                            Message::TasksList(TasksListMsg::DeleteConfirm(String::new()))
+                        ),
                         button(
                             svg(svg::Handle::from_memory(check_icon()))
                             .width(Length::Fill).height(Length::Fill)
                         ).style(move |_, _| button::Style { 
                             ..Default::default()
                         }).padding(Padding::from(4))
-                        .width(30).height(30).on_press(Message::DeleteTask(task.id.clone()))
+                        .width(30).height(30).on_press(
+                            Message::TasksList(TasksListMsg::DeleteTask(task.id.clone()))
+                        )
                     ]
                 } else{
                     row![
@@ -104,9 +116,9 @@ pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Mess
                         }).padding(Padding::from(4))
                         .width(30).height(30).on_press(
                             if delete_confirm.0{
-                                Message::DeleteConfirm(task.id.clone())
+                                Message::TasksList(TasksListMsg::DeleteConfirm(task.id.clone()))
                             } else{
-                                Message::DeleteTask(task.id.clone())
+                                Message::TasksList(TasksListMsg::DeleteTask(task.id.clone()))
                             }
                         )
                     ]

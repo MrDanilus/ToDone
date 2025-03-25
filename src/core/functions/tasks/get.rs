@@ -1,14 +1,13 @@
 use std::collections::HashMap;
-
 use serde_json::Value;
 
-use crate::core::files::get::get_file;
+use crate::core::functions::files::get;
 use super::Task;
 
 pub fn get_all() -> Result<HashMap<String, Task>, String>{
     let mut result = HashMap::new();
 
-    let tasks_str = match get_file("tasks.todo"){
+    let tasks_str = match get::get_file("tasks.todo"){
         Ok(res) => res,
         Err(err) => return Err(err)
     };

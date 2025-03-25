@@ -1,8 +1,8 @@
-use crate::core::files::get::get_file;
+use crate::core::functions::files::get;
 use super::Settings;
 
 pub fn load() -> Result<Settings, String>{
-    let settings_str = match get_file("settings.todo"){
+    let settings_str = match get::get_file("settings.todo"){
         Ok(res) => res,
         Err(err) => return Err(err)
     };

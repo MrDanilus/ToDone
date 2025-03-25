@@ -4,7 +4,16 @@ use iced::{
     }, Background, Border, Color, Element, Length, Padding
 };
 
-use crate::{icons::arrow_back_icon, ui::{components::headers::button_n_text, styles::ToDoTheme, Message, Page, ToDo}};
+use crate::{
+    icons::arrow_back_icon,
+    core::update::{
+        tasks::TasksMsg, Message
+    }, 
+    ui::{
+        components::headers::button_n_text, 
+        styles::ToDoTheme, Page, ToDo
+    }
+};
 
 pub fn func(todo: &ToDo) -> Element<Message> {
     let mut buttons = Vec::new();
@@ -12,8 +21,9 @@ pub fn func(todo: &ToDo) -> Element<Message> {
         buttons.push(
             container(
                 button("")
-                .on_press(Message::PriorityCreateChange(i))
-                .style(move |theme, status| ToDo::priority_button(
+                .on_press(
+                    Message::Tasks(TasksMsg::PriorityCreateChange(i))
+                ).style(move |theme, status| ToDo::priority_button(
                     ToDo::get_theme(theme), todo.create.priority, 
                     status, i
                 )).width(30).height(30)
@@ -35,15 +45,16 @@ pub fn func(todo: &ToDo) -> Element<Message> {
                     container(
                         column![
                         text_input("Имя", &todo.create.name)
-                            .on_input(Message::NameCreateType)
-                            .width(300)
+                            .on_input(
+                                |str| Message::Tasks(TasksMsg::NameCreateType(str))
+                            ).width(300)
                             .padding(Padding::new(10.0)),
                         text_editor(&todo.create.description)
-                            .on_action(Message::DescriptionCreateType)
-                            .placeholder("Описание")
-                            .width(300)
+                            .on_action(
+                                |action| Message::Tasks(TasksMsg::DescriptionCreateType(action))
+                            ).placeholder("Описание")
+                            .width(300).height(128)
                             .padding(Padding::new(10.0))
-                            .height(128)
                         ].spacing(20)
                     ).center_x(Length::Fill),
                     container(
@@ -58,8 +69,9 @@ pub fn func(todo: &ToDo) -> Element<Message> {
                     ]).padding(Padding::new(20.0)),
                     container(
                         button("Создать").padding(Padding::new(10.0))
-                        .on_press(Message::CreateTask)
-                        .style(|theme, status| button::Style { 
+                        .on_press(
+                            Message::Tasks(TasksMsg::CreateTask)
+                        ).style(|theme, status| button::Style { 
                             text_color: match ToDo::get_theme(theme) {
                                 ToDoTheme::Dark => Color::from_rgb(0.1, 0.1, 0.1),
                                 ToDoTheme::Light => Color::WHITE
