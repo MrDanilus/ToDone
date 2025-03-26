@@ -17,7 +17,7 @@ pub fn button_n_text(icon: &'static [u8], msg: Message, title: String) -> Stack<
 
     stack = stack.push(
         container(
-            buttons::button::hoverable(
+            buttons::icon::hoverable(
                 icon, msg, (32, 40)
         )).padding(Padding::from([10.0, 12.0]))
     );

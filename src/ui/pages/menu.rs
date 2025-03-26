@@ -45,7 +45,7 @@ pub fn func(todo: &ToDo) -> Element<Message> {
             ].height(Length::Fill).spacing(8)
             .padding(Padding::from([20.0, 50.0])),
             row![
-                buttons::button::hoverable(
+                buttons::icon::hoverable(
                     github_icon(), Message::Menu(MenuMsg::OpenGitHub),
                     (30, 30)
                 )

@@ -1,15 +1,15 @@
 use iced::{
-    border::Radius, widget::{
+    widget::{
         button, column, container, text, Row, Space
-    }, Background, Border, Color, Element, Length, Padding
+    }, Color, Element, Length, Padding
 };
 
 use crate::{
     core::update::{
         tasks::TasksMsg, Message
     }, icons::arrow_back_icon, ui::{
-        components::{headers::button_n_text, inputs}, 
-        styles::ToDoTheme, Page, ToDo
+        components::{buttons, headers::button_n_text, inputs}, 
+        Page, ToDo
     }
 };
 
@@ -61,25 +61,9 @@ pub fn func(todo: &ToDo) -> Element<Message> {
                         ).center_x(Length::Fill)
                     ]).padding(Padding::new(20.0)),
                     container(
-                        button("Создать").padding(Padding::new(10.0))
-                        .on_press(
-                            Message::Tasks(TasksMsg::CreateTask)
-                        ).style(|theme, status| button::Style { 
-                            text_color: match ToDo::get_theme(theme) {
-                                ToDoTheme::Dark => Color::from_rgb(0.1, 0.1, 0.1),
-                                ToDoTheme::Light => Color::WHITE
-                            },
-                            background: Some(Background::Color(
-                                match status{
-                                    button::Status::Hovered => ToDo::primary_color(),
-                                    _ => ToDo::primary_color().scale_alpha(0.95)
-                                })),
-                            border: Border{
-                                radius: Radius::new(8),
-                                ..Default::default()
-                            },
-                            ..Default::default() 
-                        })
+                        buttons::button::hoverable(
+                            "Создать", Message::Tasks(TasksMsg::CreateTask)
+                        ).padding(Padding::new(10.0))
                     ).center_x(Length::Fill),
                     Space::new(10, 10),
                     container(

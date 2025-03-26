@@ -1,26 +1,26 @@
-use iced::{widget::{button, svg, Button}, Color, Length, Padding, Renderer, Theme};
-use crate::{core::update::Message, ui::{styles::ToDoTheme, ToDo}};
+use iced::{
+    border::Radius, 
+    widget::{button, Button}, 
+    Background, Border, Color, Renderer, Theme
+};
+use crate::{
+    core::update::Message, 
+    ui::ToDo
+};
 
-pub fn hoverable(icon: &'static [u8], function: Message, size: (u16, u16)) -> Button<'static, Message, Theme, Renderer> {
-    button(
-        svg(svg::Handle::from_memory(icon))
-            .width(Length::Fill).height(Length::Fill)
-            .style(|theme, status| svg::Style { 
-                color: Some(match status {
-                    svg::Status::Idle => match ToDo::get_theme(theme){
-                        ToDoTheme::Dark => Color::from_rgb(0.4, 0.4, 0.4),
-                        ToDoTheme::Light => Color::from_rgb(0.6, 0.6, 0.6)
-                    }
-                    svg::Status::Hovered => match ToDo::get_theme(theme){
-                        ToDoTheme::Dark => Color::from_rgb(0.8, 0.8, 0.8),
-                        ToDoTheme::Light => Color::from_rgb(0.2, 0.2, 0.2)
-                    }
-                })
-            })
-    ).on_press(function)
-    .style(|_, _| button::Style{
-        background: None,
-        ..Default::default()
-    }).width(size.0).height(size.1)
-    .padding(Padding::ZERO)
+pub fn hoverable(text: &'static str, function: Message) -> Button<'static, Message, Theme, Renderer> {
+    button(text)
+        .style(|_, status| button::Style { 
+            text_color: Color::WHITE,
+            background: Some(Background::Color(
+                match status{
+                    button::Status::Hovered => ToDo::primary_color(),
+                    _ => ToDo::primary_color().scale_alpha(0.85)
+                })),
+            border: Border{
+                radius: Radius::new(5),
+                ..Default::default()
+            },
+            ..Default::default() 
+        }).on_press(function)
 }
