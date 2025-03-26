@@ -17,7 +17,7 @@ pub enum Page {
     CreateTask,
     EditTask(String),
     // Система
-    Settings
+    Menu
 }
 
 #[derive(Default)]

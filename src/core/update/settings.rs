@@ -6,8 +6,7 @@ use super::Message;
 pub enum SettingsMsg{
     LoadSettings,
     ChangeDeleteConfirm,
-    ChangeTheme(ToDoTheme),
-    OpenGitHub
+    ChangeTheme(ToDoTheme)
 }
 
 pub fn handle(todo: &mut ToDo, message: SettingsMsg) {
@@ -20,9 +19,6 @@ pub fn handle(todo: &mut ToDo, message: SettingsMsg) {
         // Изменение подтверждения удаления
         SettingsMsg::ChangeDeleteConfirm => todo.settings.delete_confirm = !todo.settings.delete_confirm,
         // Смена темы программы
-        SettingsMsg::ChangeTheme(theme) => todo.settings.theme = Some(theme),
-        SettingsMsg::OpenGitHub => if let Err(err) = open::that("https://github.com/MrDanilus/ToDone"){
-            super::handle(todo, Message::Panic(err.to_string()));
-        }
+        SettingsMsg::ChangeTheme(theme) => todo.settings.theme = Some(theme)
     }
 }

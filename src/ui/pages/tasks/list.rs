@@ -1,13 +1,13 @@
 use iced::{
     widget::{
-        button, column, container, row, scrollable, svg, text, text_input, Column
+        button, column, container, row, scrollable, text, Column
     }, Color, Element, Length, Padding
 };
 
 use crate::{
     core::update::{tasks_list::TasksListMsg, Message}, icons::menu_icon, 
     ui::{
-        components::{headers::button_n_text, tasks_list::task}, 
+        components::{headers::button_n_text, inputs, tasks_list::task}, 
         styles::ToDoTheme, Page, ToDo
     }
 };
@@ -21,11 +21,16 @@ pub fn func(todo: &ToDo) -> Element<Message> {
         ).center_x(Length::Fill)
         .padding(Padding::from([50.0, 0.0]));
     } else{
+        let mut tasks = todo.tasks.values().collect::<Vec<_>>();
+        // Сортировка задач
+        tasks.sort_by(|task1, task2| task2.priority.cmp(&task1.priority));
+        tasks.sort_by_key(|task| task.completed.clone());
+        // Создание элементов
         let mut elements = Vec::new();
-        for task in &todo.tasks{
+        for task in &tasks{
             elements.push(task::func(
                 (todo.settings.delete_confirm, todo.task_to_delete.clone()), 
-                task.1
+                task
             ).into());
         }
 
@@ -37,27 +42,16 @@ pub fn func(todo: &ToDo) -> Element<Message> {
     container(
         column![
             button_n_text(
-                svg(svg::Handle::from_memory(menu_icon()))
-                    .width(36).height(44)
-                    .style(|theme, status| svg::Style { 
-                        color: Some(
-                            match status {
-                                svg::Status::Idle => Color::from_rgb(0.4, 0.4, 0.4),
-                                svg::Status::Hovered => match ToDo::get_theme(theme){
-                                    ToDoTheme::Dark => Color::WHITE,
-                                    ToDoTheme::Light => Color::BLACK
-                                }
-                            }
-                        )
-                    }), 
-                Message::ChangePage(Page::Settings), String::from("Задачки")),
+                menu_icon(), Message::ChangePage(Page::Menu),
+                String::from("Задачки")
+            ),
             container(
                 row![
-                    text_input("Поиск", &todo.search_text)
-                        .on_input(
-                            |str| Message::TasksList(TasksListMsg::SearchChange(str))
-                        ).size(16).width(240.0)
-                        .padding(Padding::new(4.0)),
+                    inputs::input(
+                        "Поиск", todo.search_text.clone(), 
+                        |str| Message::TasksList(TasksListMsg::SearchChange(str))
+                    ).size(16).width(240.0)
+                    .padding(Padding::new(4.0)),
                     container(button(text("+").size(32).line_height(0.4))
                         .on_press(Message::ChangePage(Page::CreateTask))
                         .style(|theme, _| button::Style{

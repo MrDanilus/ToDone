@@ -1,9 +1,10 @@
 [package]
 name = "todone"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 
 [dependencies]
+iced_core = "0.13.2"
 iced = { version = "0.13.1", features = ["svg"]}
 
 serde = { version = "1.0.219", features = ["derive"] }

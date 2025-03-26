@@ -7,6 +7,8 @@ pub mod tasks;
 use tasks::TasksMsg;
 pub mod settings;
 use settings::SettingsMsg;
+pub mod menu;
+use menu::MenuMsg;
 
 use crate::ui::{Page, ToDo};
 use super::{functions::settings::save::save, functions::tasks::{get::get_all, save::save_all}};
@@ -25,7 +27,9 @@ pub enum Message {
     //// Задачи
     Tasks(TasksMsg),
     //// Настройки
-    Settings(SettingsMsg)
+    Settings(SettingsMsg),
+    //// Меню
+    Menu(MenuMsg)
 }
 
 pub fn handle(todo: &mut ToDo, message: Message) {
@@ -89,7 +93,7 @@ pub fn handle(todo: &mut ToDo, message: Message) {
                     todo.edit.error.clear();
                     todo.edit.success.clear();
                 },
-                Page::Settings => settings::handle(todo, SettingsMsg::LoadSettings),
+                Page::Menu => settings::handle(todo, SettingsMsg::LoadSettings),
             }
             todo.search_text.clear();
             todo.page = page
@@ -100,6 +104,8 @@ pub fn handle(todo: &mut ToDo, message: Message) {
         // Действия с задачами
         Message::Tasks(msg) => tasks::handle(todo, msg),
         // Настройки
-        Message::Settings(msg) => settings::handle(todo, msg)
+        Message::Settings(msg) => settings::handle(todo, msg),
+        // Меню
+        Message::Menu(msg) => menu::handle(todo, msg)
     }
 }

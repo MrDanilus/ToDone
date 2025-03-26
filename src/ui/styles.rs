@@ -2,7 +2,6 @@ use std::f32::INFINITY;
 use std::sync::Arc;
 use iced::border::Radius;
 use iced::theme::{Custom, Palette};
-use iced::widget::svg;
 use iced::{widget::button, Background, Border, Color, Theme};
 use serde::{Deserialize, Serialize};
 
@@ -68,15 +67,6 @@ impl ToDo{
     }
 
     pub fn primary_color() -> Color{ Color::parse("#0f9aff").unwrap() }
-
-    pub fn svg_icon(current_theme: ToDoTheme, dark_color: Color) -> svg::Style{
-        svg::Style { 
-            color: match current_theme {
-                ToDoTheme::Dark => Some(dark_color),
-                ToDoTheme::Light => Some(dark_color.inverse())
-            }
-        }
-    }
 
     pub fn priority_button(
         current_theme: ToDoTheme, current_priority: u8, status: button::Status, priority: u8

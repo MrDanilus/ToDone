@@ -1,16 +1,14 @@
 use iced::{
     border::Radius, widget::{
-        button, column, container, svg, text, text_editor, text_input, Row, Space
+        button, column, container, text, Row, Space
     }, Background, Border, Color, Element, Length, Padding
 };
 
 use crate::{
-    icons::arrow_back_icon,
     core::update::{
         tasks::TasksMsg, Message
-    }, 
-    ui::{
-        components::headers::button_n_text, 
+    }, icons::arrow_back_icon, ui::{
+        components::{headers::button_n_text, inputs}, 
         styles::ToDoTheme, Page, ToDo
     }
 };
@@ -34,27 +32,22 @@ pub fn func(todo: &ToDo) -> Element<Message> {
     container(
         column![
             button_n_text(
-                svg(svg::Handle::from_memory(arrow_back_icon()))
-                    .width(36).height(44)
-                    .style(|theme, _| ToDo::svg_icon(
-                        ToDo::get_theme(theme), Color::parse("#efefef").unwrap()
-                    )),
-                Message::ChangePage(Page::TasksList), String::from("Новая задача")),
+                arrow_back_icon(), Message::ChangePage(Page::TasksList),
+                String::from("Новая задача")
+            ),
             container(
                 column![
                     container(
                         column![
-                        text_input("Имя", &todo.create.name)
-                            .on_input(
-                                |str| Message::Tasks(TasksMsg::NameCreateType(str))
-                            ).width(300)
-                            .padding(Padding::new(10.0)),
-                        text_editor(&todo.create.description)
-                            .on_action(
-                                |action| Message::Tasks(TasksMsg::DescriptionCreateType(action))
-                            ).placeholder("Описание")
-                            .width(300).height(128)
-                            .padding(Padding::new(10.0))
+                        inputs::input(
+                            "Имя", todo.create.name.clone(), 
+                            |str| Message::Tasks(TasksMsg::NameCreateType(str))
+                        ).width(300).padding(Padding::new(10.0)),
+                        inputs::editor(
+                            "Описание", &todo.create.description,
+                            |action| Message::Tasks(TasksMsg::DescriptionCreateType(action))
+                        ).width(300).height(128)
+                        .padding(Padding::new(10.0))
                         ].spacing(20)
                     ).center_x(Length::Fill),
                     container(

@@ -13,6 +13,6 @@ pub fn func(todo: &ToDo) -> Element<Message> {
         Page::TasksList => pages::tasks::list::func(todo),
         Page::CreateTask => pages::tasks::new_task::func(todo),
         Page::EditTask(_) => pages::tasks::edit_task::func(todo),
-        Page::Settings => pages::settings::func(todo)
+        Page::Menu => pages::menu::func(todo)
     }
 }

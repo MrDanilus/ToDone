@@ -1,8 +1,12 @@
-use iced::{widget::{button, container, text, Stack, Svg}, Color, Length, Padding, Theme};
+use iced::{
+    widget::{container, text, Stack},
+    Length, Padding, Theme
+};
 
 use crate::core::update::Message;
+use super::buttons;
 
-pub fn button_n_text(svg: Svg<'static>, function: Message, title: String) -> Stack<'static, Message, Theme>{
+pub fn button_n_text(icon: &'static [u8], msg: Message, title: String) -> Stack<'static, Message, Theme>{
     let mut stack = Stack::new();
     stack = stack.push(
         container(
@@ -13,14 +17,9 @@ pub fn button_n_text(svg: Svg<'static>, function: Message, title: String) -> Sta
 
     stack = stack.push(
         container(
-            button(svg)
-            .on_press(function)
-                .style(|_, _| button::Style{
-                    background: None,
-                    text_color: Color::WHITE,
-                    ..Default::default()
-                })
-        )
+            buttons::button::hoverable(
+                icon, msg, (32, 40)
+        )).padding(Padding::from([10.0, 12.0]))
     );
     return stack;
 }

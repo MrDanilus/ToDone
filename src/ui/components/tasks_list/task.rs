@@ -44,7 +44,7 @@ pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Mess
                     border: Border{
                         radius: Radius::new(INFINITY),
                         color: priority_color,
-                        width: 1.0
+                        width: 2.0
                     },
                     ..Default::default()
                 }).padding(Padding::from(4))
