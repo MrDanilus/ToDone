@@ -7,12 +7,13 @@ use iced::{
 };
 
 use crate::{
-    core::{functions::tasks::Task, ui::truncate_text, update::{tasks_list::TasksListMsg, Message}}, 
+    core::{functions::tasks::Task, ui::truncate_text_adaptive, update::{tasks_list::TasksListMsg, Message}}, 
     icons::{check_icon, cross_icon, delete_icon, edit_icon}, 
     ui::{styles::ToDoTheme, Page, ToDo}
 };
 
-pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Message, Theme, Renderer>{
+pub fn func(window_width: u32, delete_confirm: (bool, String), subtasks_task: &String, task: &Task)
+ -> Column<'static, Message, Theme, Renderer>{
     let completed = task.completed.clone();
     let priority_color;
     if !task.completed{
@@ -31,30 +32,57 @@ pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Mess
     column![
     container(row![
             container(
-                button(
-                    if task.completed{
+                column![
+                    button(
+                        if task.completed{
+                            container(
+                                svg(svg::Handle::from_memory(check_icon()))
+                                .width(Length::Fill).height(Length::Fill)
+                            )
+                        } else{
+                            container(Space::new(0, 0))
+                        }
+                    ).style(move |_, _| button::Style { 
+                        border: Border{
+                            radius: Radius::new(INFINITY),
+                            color: priority_color,
+                            width: 2.0
+                        },
+                        ..Default::default()
+                    }).padding(Padding::from(4))
+                    .width(30).height(30)
+                    .on_press(
+                        Message::TasksList(TasksListMsg::CompleteTask(task.id.clone()))
+                    ),
+                    if !task.subtasks.is_empty(){
                         container(
-                            svg(svg::Handle::from_memory(check_icon()))
-                            .width(Length::Fill).height(Length::Fill)
-                        )
+                            button(
+                                text(
+                                    if &task.id == subtasks_task{ "-" }
+                                    else{ "+" }
+                                ).size(20)
+                            ).style(|theme, status| button::Style { 
+                                text_color: match status{
+                                    button::Status::Hovered => match ToDo::get_theme(theme) {
+                                        ToDoTheme::Dark => Color::WHITE,
+                                        ToDoTheme::Light => Color::BLACK,
+                                    },
+                                    _ => match ToDo::get_theme(theme) {
+                                        ToDoTheme::Dark => Color::from_rgb(0.6, 0.6, 0.6),
+                                        ToDoTheme::Light => Color::from_rgb(0.4, 0.4, 0.4),
+                                    },
+                                },
+                                ..Default::default()
+                            }).padding(0)
+                        ).align_x(Horizontal::Center)
+                        .width(30)
                     } else{
                         container(Space::new(0, 0))
                     }
-                ).style(move |_, _| button::Style { 
-                    border: Border{
-                        radius: Radius::new(INFINITY),
-                        color: priority_color,
-                        width: 2.0
-                    },
-                    ..Default::default()
-                }).padding(Padding::from(4))
-                .width(30).height(30)
-                .on_press(
-                    Message::TasksList(TasksListMsg::CompleteTask(task.id.clone()))
-                )
+                ]
             ),
             column![
-                text(truncate_text(&task.name, 40)).size(20)
+                text(truncate_text_adaptive(&task.name, window_width, 700, 40)).size(20)
                 .style(move |theme| text::Style { 
                     color: if !completed {
                         match ToDo::get_theme(theme) {
@@ -63,12 +91,17 @@ pub fn func(delete_confirm: (bool, String), task: &Task) -> Column<'static, Mess
                         }
                     }
                     else {Some(Color::from_rgb(0.65, 0.65, 0.65))}
-                 }),
-                text(truncate_text(&task.description, 60)).size(12)
-                .color(
-                    if !task.completed {Color::from_rgb(0.7, 0.7, 0.7)}
-                    else {Color::from_rgb(0.35, 0.35, 0.35)}
-                )
+                }),
+                text(truncate_text_adaptive(&task.description, window_width, 700, 50)).size(12)
+                .style(move |theme| text::Style { 
+                    color: if !completed {
+                        match ToDo::get_theme(theme) {
+                            ToDoTheme::Dark => Some(Color::from_rgb(0.7, 0.7, 0.7)),
+                            ToDoTheme::Light => Some(Color::from_rgb(0.4, 0.4, 0.4)),
+                        }
+                    }
+                    else {Some(Color::from_rgb(0.65, 0.65, 0.65))}
+                })
             ],
             container(
                 if delete_confirm.0 && delete_confirm.1 == task.id{

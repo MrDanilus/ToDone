@@ -22,6 +22,8 @@ pub enum Page {
 
 #[derive(Default)]
 pub struct ToDo {
+    // UI
+    pub window: Window,
     // Страницы
     pub panic: String,
     pub page: Page,
@@ -30,6 +32,8 @@ pub struct ToDo {
     pub search_text: String,
     pub tasks: HashMap<String, Task>,
     pub task_to_delete: String,
+    // Подзадачи
+    pub subtasks_for_task: String,
 
     // Новая задача
     pub create: CreateTask,
@@ -37,6 +41,12 @@ pub struct ToDo {
     pub edit: EditTask,
     // Настройки
     pub settings: Settings
+}
+
+#[derive(Default)]
+pub struct Window{
+    pub width: u32,
+    pub height: u32
 }
 
 #[derive(Default)]

@@ -29,8 +29,9 @@ pub fn func(todo: &ToDo) -> Element<Message> {
         let mut elements = Vec::new();
         for task in &tasks{
             elements.push(task::func(
+                todo.window.width,
                 (todo.settings.delete_confirm, todo.task_to_delete.clone()), 
-                task
+                &todo.subtasks_for_task, task
             ).into());
         }
 

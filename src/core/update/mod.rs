@@ -15,6 +15,8 @@ use super::{functions::settings::save::save, functions::tasks::{get::get_all, sa
 
 #[derive(Debug, Clone)]
 pub enum Message {
+    // UI
+    WindowResized(u32, u32),
     // Система
     LoadTasks,
     // Страницы
@@ -34,6 +36,11 @@ pub enum Message {
 
 pub fn handle(todo: &mut ToDo, message: Message) {
     match message {
+        // UI
+        Message::WindowResized(width, height) => {
+            todo.window.width = width;
+            todo.window.height = height;
+        },
         // Система
         //// Загрузка задач из файла
         Message::LoadTasks => {
